@@ -6,6 +6,7 @@
 #define M_HOLO_NETWORK_H
 
 #include <WiFi.h>
+#include "AsyncWebSocket.h"
 
 
 class NetWork {
@@ -18,6 +19,8 @@ public:
     NetWork();
 
     void scan_wifi();
+
+    void registerWifiEvent( AsyncWebSocket *ws);
 
 //连接wifi
     void connectWifi(const char *ssid, const char *password);

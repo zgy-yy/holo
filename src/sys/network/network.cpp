@@ -24,6 +24,34 @@ NetWork::NetWork() {
     WiFi.mode(WIFI_MODE_APSTA);
 }
 
+DynamicJsonDocument doc(2048);
+
+void NetWork::registerWifiEvent(AsyncWebSocket *ws) {
+//连接到热点获取ip 事件
+    WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
+        m_log("连接到 wifi", WiFi.SSID().c_str(), IPAddress(info.connected.ssid).toString().c_str(), NULL);
+    }, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
+    //扫描热点结束
+    WiFi.onEvent([this, ws](WiFiEvent_t event, WiFiEventInfo_t info) {
+        String outJson;
+        String wifiList = this->getSearchedWifi();
+        Serial.println("搜索结束");
+        doc["type"] = 0;
+        doc["name"] = "search";
+        doc["state"] = "ok";
+        doc["data"] = wifiList.c_str();
+        serializeJson(doc, outJson);
+        doc.clear();
+        ws->textAll(outJson.c_str());
+    }, WiFiEvent_t::SYSTEM_EVENT_SCAN_DONE);
+
+//断开连接事件
+    WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
+        m_log("断开 wifi", WiFi.SSID().c_str(), NULL);
+    }, WiFiEvent_t::SYSTEM_EVENT_STA_DISCONNECTED);
+}
+
+
 void NetWork::scan_wifi() {
     WiFi.scanNetworks(true, true);
     Serial.println("搜索 wifi...");
@@ -31,7 +59,7 @@ void NetWork::scan_wifi() {
 
 
 void NetWork::connectWifi(const char *ssid, const char *password) {
-    WiFi.enableSTA(true);
+//    WiFi.enableSTA(true);
 //    WiFi.setHostname(this->host_name);
     Serial.printf("%s Connecting... \n", ssid);
     WiFi.begin(ssid, password);
@@ -40,7 +68,7 @@ void NetWork::connectWifi(const char *ssid, const char *password) {
 boolean NetWork::disconnectWifi() {
     WiFi.disconnect();
     Serial.println(F("WiFi disconnect"));
-   return WiFi.status() == WL_DISCONNECTED;
+    return WiFi.status() == WL_DISCONNECTED;
 }
 
 void NetWork::open_ap() {
@@ -86,12 +114,12 @@ String NetWork::getWifiStatus() {
               hostName.c_str(), NULL);
     }
     serializeJson(doc, jsonData);
+    doc.clear();
     return jsonData;
 }
 
 String NetWork::getSearchedWifi() {
     String dataJson;
-    StaticJsonDocument<512> doc;
     int16_t wifi_num = WiFi.scanComplete();
 
     String msg;
@@ -109,6 +137,11 @@ String NetWork::getSearchedWifi() {
     }
     serializeJsonPretty(doc, dataJson);
     m_log("WifiSearch", numInfo.c_str(), dataJson.c_str(), NULL);
+    dataJson = "";
+    serializeJson(doc, dataJson);
+    doc.clear();
     return dataJson;
 }
+
+
 

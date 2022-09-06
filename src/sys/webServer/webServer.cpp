@@ -31,9 +31,15 @@ void wsOnEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventTyp
 
 
 WebServer::WebServer() {
+    httpServer = new AsyncWebServer(port);
+    ws = new AsyncWebSocket("/ws");
+
     netWork = getNetWorkIns();
+    //    注册wifi 事件
+    netWork->registerWifiEvent(this->ws);
     netWork->open_ap();
-    netWork->connectWifi("CQUPT-2.4G", "");
+//
+    netWork->connectWifi("CQUPT", "");
     startHttpServer();
     startWebSocket();
 }
@@ -44,13 +50,11 @@ WebServer::WebServer(int port) {
 }
 
 void WebServer::startHttpServer() {
-    httpServer = new AsyncWebServer(port);
     serverEventsInit();
     httpServer->begin();
 }
 
 void WebServer::startWebSocket() {
-    ws = new AsyncWebSocket("/ws");
     ws->onEvent(wsOnEvent);
     httpServer->addHandler(ws);
 }
@@ -77,39 +81,31 @@ void WebServer::addSocketEvent(char *eventName,
     usedlen += 1;
 }
 
-void WebServer::addHttpServer(const char *uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest) {
-    httpServer->on(uri, method, onRequest);
-}
-
 //
+
 void WebServer::serverEventsInit() {
     //httpServer;
     NetWork *wifi = netWork;
 
-    httpServer->on("/wifi/list",HTTP_GET,[&wifi](AsyncWebServerRequest *request){
-        wifi->getSearchedWifi();
-        String wifiList = wifi->getSearchedWifi();
-        request->send(200,"text/plain",wifiList);
-    });
-    httpServer->on("/wifi/status",HTTP_GET,[&wifi](AsyncWebServerRequest *request){
+    httpServer->on("/wifi/status", HTTP_GET, [wifi](AsyncWebServerRequest *request) {
         String status = wifi->getWifiStatus();
-        request->send(200,"text/plain",status);
+        request->send(200, "text/plain", status);
     });
 
-    AsyncCallbackJsonWebHandler *connectWifiHandler = new AsyncCallbackJsonWebHandler("/wifi/connect",
-                                                                           [&wifi](AsyncWebServerRequest *request,
-                                                                                   JsonVariant &json) {
-                                                                               JsonObject jsonObj = json.as<JsonObject>();
-                                                                               String name;
-                                                                               String pwd;
-                                                                               serializeJson(jsonObj["name"], name);
-                                                                               serializeJson(jsonObj["pwd"], pwd);
-                                                                               Serial.printf("%s:%s\n",name.c_str(),pwd.c_str());
-//                                                                               WiFi.begin(name.c_str(),pwd.c_str());
-                                                                               wifi->connectWifi(name.c_str(),pwd.c_str());
-                                                                               request->send(200, "text/plain", "{\"status\":\"ok\"}");
-                                                                           });
-    httpServer->addHandler(connectWifiHandler);
+    httpServer->on("/wifi/connect", HTTP_GET, [wifi](AsyncWebServerRequest *request) {
+        request->getParam(0);
+        int params = request->params();
+        AsyncWebParameter* name;
+        AsyncWebParameter* pwd;
+        if(request->hasParam("ssid"))
+            name = request->getParam("ssid");
+        if(request->hasParam("pwd"))
+            pwd = request->getParam("pwd");
+//        Serial.printf("%s,%s\n",name->value().c_str(),pwd->value().c_str());
+        wifi->connectWifi(name->value().c_str(),pwd->value().c_str());
+        request->send(200, "text/plain", "");
+    });
+
 
     //websocket Server;
     /*

@@ -40,7 +40,7 @@ public:
                                              void *arg, uint8_t *data,
                                              size_t len));
 
-    void addHttpServer(const char *uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest);
+//    void addHttpServer(const char *uri, WebRequestMethodComposite method, ArRequestHandlerFunction onRequest);
 
     void serverEventsInit();
 };
