@@ -202,6 +202,8 @@ void IRAM_ATTR onTimer() {
     update();
 }
 
+static int lastsec = millis();
+
 void Time::setup() {
     localTime.setTime(1652112000);
     ui();
@@ -211,24 +213,21 @@ void Time::setup() {
     timerAlarmEnable(timer);
 }
 
-static int lastsec = millis();
+int updateIndex = 0;
 
 void Time::loop() {
-    if (millis() - lastsec > 1000) {
-        if (calibration) {
-            unsigned long stamp = httpGetTime();
-            if (stamp > 0) {
-                localTime.setTime(stamp);
-                delay(1000);
+//    隔一段时间校准;
+    if (millis() - lastsec > 1000 * 10) {
+        unsigned long stamp = httpGetTime();
+        if (stamp > 0) {
+            localTime.setTime(stamp);
+            if (updateIndex > 0) {
                 calibration = false;
             }
+            updateIndex++;
         }
     }
-//    隔一段时间校准;
-    if( millis() - lastsec>1000*10){
-        lastsec = millis();
-        calibration = true;
-    }
+
 }
 
 void Time::exit() {

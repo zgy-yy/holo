@@ -12,8 +12,8 @@ void setup() {
     Serial.begin(115200);
     screen.init(4, 100);
     appController = new AppController();
-    appController->run_app(new Time());
     webServer = new WebServer();
+    appController->run_app(new Time());
 }
 
 void processLoop() {
