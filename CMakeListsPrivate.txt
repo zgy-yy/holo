@@ -43,6 +43,7 @@ include_directories("${CMAKE_CURRENT_LIST_DIR}/lib/ArduinoJson-6.x")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/lib/ArduinoJson-6.x/src")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/lib/ESPAsyncWebServer/src")
 include_directories("${CMAKE_CURRENT_LIST_DIR}/lib/AsyncTCP/src")
+include_directories("${CMAKE_CURRENT_LIST_DIR}/lib/ESP32Time")
 
     include_directories("${CMAKE_CURRENT_LIST_DIR}/include")
     include_directories("${CMAKE_CURRENT_LIST_DIR}/src")

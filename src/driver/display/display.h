@@ -9,7 +9,7 @@ class Display
 {
 public:
     void init(uint8_t rotation, uint8_t backLight);
-    void routine();
+    void routine(void (*fun)(void ));
     void setBackLight(float);
 };
 #endif //M_HOLO_DISPLAY_H

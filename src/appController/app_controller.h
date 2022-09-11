@@ -22,15 +22,21 @@ public:
     }
 
     //子类必须实例化该函数，作为应用的入口
-    virtual void main_process() = 0;
+    virtual void setup() = 0;
+    virtual void loop()=0;
+//    程序退出，应打扫现场，防止内存泄露
+    virtual void exit()=0;
 };
 
 class AppController {
+    App *currentApp;
+
 public:
     AppController() {
     }
 
     void run_app(App *app);
+    void mainProcess();
 };
 
 #endif //M_HOLO_APP_CONTROLLER_H

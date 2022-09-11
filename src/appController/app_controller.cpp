@@ -3,6 +3,12 @@
 //
 
 #include "app_controller.h"
+
 void AppController::run_app(App *app) {
-    app->main_process();
+    this->currentApp = app;
+    app->setup();
+}
+
+void AppController::mainProcess() {
+    this->currentApp->loop();
 }

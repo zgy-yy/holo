@@ -76,7 +76,7 @@ class VariantProxy : public VariantShortcuts<VariantProxy<TDataSource> >,
 
   template <typename T>
   FORCE_INLINE operator T() const {
-    return as<T>();
+    return static_cast<char *>(as<T>());
   }
 
   template <typename T>

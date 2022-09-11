@@ -13,7 +13,5 @@ public:
     }
     Test(char *name, char *author, char *version, char *info) : App(name, author, version, info) {
     }
-
-    void main_process() override;
 };
 #endif //M_HOLO_TEST_H

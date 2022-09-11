@@ -4,6 +4,8 @@
 
 #include "util.h"
 
+ESP32Time localTime(28800);
+
 void m_log(char *title, ...) {
     va_list vaList;
     char *p;

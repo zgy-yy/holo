@@ -48,9 +48,22 @@ void Display::init(uint8_t rotation, uint8_t backLight) {
     lv_disp_drv_register(&disp_drv);
 }
 
-void Display::routine() {
-    lv_timer_handler(); /* let the GUI do its work */
-    delay(5);
+//void IRAM_ATTR onTimer() {
+//
+//}
+
+void Display::routine(void (*fun)()) {
+//    delay(5);
+    //  lv_timer_handler(); /* let the GUI do its work */
+//    hw_timer_t *timer = timerBegin(0, 80, true);
+//    timerAttachInterrupt(timer, &onTimer, true);
+//    timerAlarmWrite(timer, 1000000, true);
+//    timerAlarmEnable(timer);
+    long last_time = millis();
+    fun();
+    delay(50);
+    lv_task_handler();
+    lv_tick_inc(int(millis() - last_time));
 }
 
 void Display::setBackLight(float duty) {

@@ -4,8 +4,7 @@
 
 #include "webServer.h"
 #include <Arduino.h>
-#include <ArduinoJson.h>
-#include <AsyncJson.h>
+
 
 static uint8_t usedlen = 0;
 static uint8_t size = 2;
@@ -39,7 +38,8 @@ WebServer::WebServer() {
     netWork->registerWifiEvent(this->ws);
     netWork->open_ap();
 //
-    netWork->connectWifi("CQUPT", "");
+    netWork->connectWifi("gy的iPhone", "12345678");
+//    netWork->connectWifi("CQUPT", "");
     startHttpServer();
     startWebSocket();
 }

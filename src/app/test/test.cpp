@@ -3,6 +3,4 @@
 //
 
 #include "test.h"
-void Test::main_process() {
-
-}
+//

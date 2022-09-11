@@ -14,21 +14,24 @@ project("m-holo" C CXX)
 
 include(CMakeListsPrivate.txt)
 
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeListsUser.txt)
-include(CMakeListsUser.txt)
-endif()
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeListsUser.txt)
+    include(CMakeListsUser.txt)
+endif ()
 
 add_custom_target(
-    Production ALL
-    COMMAND platformio -c clion run "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        Production ALL
+        COMMAND platformio -c clion run "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 add_custom_target(
-    Debug ALL
-    COMMAND platformio -c clion debug "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        Debug ALL
+        COMMAND platformio -c clion debug "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+include_directories(./src)
 
 add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/driver/rgb/rgb_led.cpp src/driver/rgb/rgb_led.h src/driver/display/display.cpp src/driver/display/display.h
-        src/driver/imu/imu.cpp src/driver/imu/imu.h src/driver/display/lv_port_indev.cpp src/driver/display/lv_port_indev.h src/sys/webServer/webServer.cpp src/sys/webServer/webServer.h src/utils/util.cpp src/utils/util.h)
+        src/driver/imu/imu.cpp src/driver/imu/imu.h src/driver/display/lv_port_indev.cpp src/driver/display/lv_port_indev.h src/sys/webServer/webServer.cpp
+        src/sys/webServer/webServer.h src/utils/util.cpp src/utils/util.h src/app/time/mFont.cpp src/app/time/mFont.cpp src/sys/http/http.cpp src/sys/http/http.h)
