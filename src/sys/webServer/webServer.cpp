@@ -38,7 +38,8 @@ WebServer::WebServer() {
     netWork->registerWifiEvent(this->ws);
     netWork->open_ap();
 //
-    netWork->connectWifi("gy的iPhone", "12345678");
+    netWork->connectWifi("holo", "12345678");
+//    netWork->connectWifi("gy的iPhone", "12345678");
 //    netWork->connectWifi("CQUPT", "");
     startHttpServer();
     startWebSocket();

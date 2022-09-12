@@ -154,13 +154,14 @@ void Time::destroyUi() {
 boolean calibration = true;
 
 void update() {
+
     int secNum = localTime.getSecond();
     lv_label_set_text(sec, String(secNum).c_str());
     int H = localTime.getHour(true);
     int M = localTime.getMinute();
     if (secNum == 0 || calibration) {
         if (M == 0 || calibration) {
-            if (H % 10 == 0) {
+            if (H % 10 == 0 || calibration) {
                 delTimeItem(hourL);
                 hourL = showTimeItem(String(H / 10).c_str());
                 delTimeItem(hourR);
@@ -202,7 +203,6 @@ void IRAM_ATTR onTimer() {
     update();
 }
 
-static int lastsec = millis();
 
 void Time::setup() {
     localTime.setTime(1652112000);
@@ -213,19 +213,35 @@ void Time::setup() {
     timerAlarmEnable(timer);
 }
 
+static int lastsec = millis();
 int updateIndex = 0;
 
 void Time::loop() {
 //    隔一段时间校准;
-    if (millis() - lastsec > 1000 * 10) {
-        unsigned long stamp = httpGetTime();
-        if (stamp > 0) {
-            localTime.setTime(stamp);
-            if (updateIndex > 0) {
-                calibration = false;
-            }
-            updateIndex++;
+    if (millis() - lastsec > 1000*2) {
+        if (updateIndex >= 1) {
+            calibration = false;
         }
+        lastsec = millis();
+        if (calibration) {
+            unsigned long stamp = httpGetTime();
+            if (stamp > 0) {
+                localTime.setTime(stamp);
+                updateIndex++;
+            }
+        }
+        if (updateIndex >= 1) {
+            updateIndex++;
+            if (updateIndex == 500) {
+                updateIndex = 1;
+                unsigned long stamp = httpGetTime();
+                if (stamp > 0) {
+                    localTime.setTime(stamp);
+                }
+            }
+        }
+
+        Serial.println(updateIndex);
     }
 
 }
