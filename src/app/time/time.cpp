@@ -218,7 +218,7 @@ int updateIndex = 0;
 
 void Time::loop() {
 //    隔一段时间校准;
-    if (millis() - lastsec > 1000*2) {
+    if (millis() - lastsec > 1000 * 2) {
         if (updateIndex >= 1) {
             calibration = false;
         }

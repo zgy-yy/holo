@@ -38,9 +38,9 @@ WebServer::WebServer() {
     netWork->registerWifiEvent(this->ws);
     netWork->open_ap();
 //
-    netWork->connectWifi("holo", "12345678");
+//    netWork->connectWifi("holo", "12345678");
 //    netWork->connectWifi("gy的iPhone", "12345678");
-//    netWork->connectWifi("CQUPT", "");
+    netWork->connectWifi("CQUPT", "");
     startHttpServer();
     startWebSocket();
 }
@@ -123,6 +123,6 @@ void WebServer::serverEventsInit() {
                       size_t len) {
                        NetWork *net = getNetWorkIns();
                        boolean ok = net->disconnectWifi();
-                       server->text(client->id(), String(ok));
+//                       server->text(client->id(), String(ok));
                    });
 }

@@ -9,7 +9,7 @@
 IPAddress local_ip(192, 168, 4, 1); // Set your server's fixed IP address here
 IPAddress gateway(192, 168, 4, 1);  // Set your network Gateway usually your Router base address
 IPAddress subnet(255, 255, 255, 0); // Set your network sub-network mask here
-IPAddress dns(192, 168, 3, 2);      // Set your network DNS usually your Router base address
+IPAddress dns(202, 202, 32, 34);      // Set your network DNS usually your Router base address
 
 NetWork *getNetWorkIns() {
     static NetWork *instance;
@@ -28,10 +28,10 @@ DynamicJsonDocument doc(2048);
 
 void NetWork::registerWifiEvent(AsyncWebSocket *ws) {
 //连接到热点获取ip 事件
-    WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
+    WiFi.onEvent([this](WiFiEvent_t event, WiFiEventInfo_t info) {
         m_log("连接到 wifi", WiFi.SSID().c_str(), IPAddress(info.connected.ssid).toString().c_str(), NULL);
     }, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
-    //扫描热点结束
+    //扫描热点结束//发送给客户端
     WiFi.onEvent([this, ws](WiFiEvent_t event, WiFiEventInfo_t info) {
         String outJson;
         String wifiList = this->getSearchedWifi();
@@ -46,8 +46,17 @@ void NetWork::registerWifiEvent(AsyncWebSocket *ws) {
     }, WiFiEvent_t::SYSTEM_EVENT_SCAN_DONE);
 
 //断开连接事件
-    WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
+    WiFi.onEvent([ws](WiFiEvent_t event, WiFiEventInfo_t info) {
         m_log("断开 wifi", WiFi.SSID().c_str(), NULL);
+        String res;
+        StaticJsonDocument<96> doc;
+
+        doc["name"] = "disconnected";
+        doc["state"] = "ok";
+        doc["type"] = 0;
+
+        serializeJson(doc, res);
+        ws->textAll(res);
     }, WiFiEvent_t::SYSTEM_EVENT_STA_DISCONNECTED);
 }
 
@@ -92,7 +101,10 @@ void NetWork::open_ap() {
 String NetWork::getWifiStatus() {
     Serial.println("wifi status");
     String jsonData;
-    StaticJsonDocument<256> doc;
+    StaticJsonDocument<128> doc;
+    doc["name"] = "connected";
+    doc["state"] = "no";
+    doc["type"] = 0;
 
     if (WiFi.status() == WL_CONNECTED) {
         String ip("IP 地址: ");
@@ -109,6 +121,9 @@ String NetWork::getWifiStatus() {
         String hostName("主机名: ");
         hostName += WiFi.getHostname();
 
+
+        doc["state"] = "ok";
+        doc["data"]["ip"] = WiFi.localIP().toString();
 
         m_log("WIFI connected!", ip.c_str(), subnetMask.c_str(), gateway.c_str(), dns.c_str(), mac.c_str(),
               hostName.c_str(), NULL);

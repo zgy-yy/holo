@@ -8,4 +8,5 @@
 #include <ArduinoJson.h>
 
 unsigned long httpGetTime();
+boolean httpLogin();
 #endif //M_HOLO_HTTP_H
