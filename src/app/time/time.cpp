@@ -20,17 +20,8 @@ Time::Time(char *name, char *author, char *version, char *info) : App(name, auth
 LV_FONT_DECLARE(mFont);
 LV_FONT_DECLARE(timeFont);
 
-lv_obj_t *act_screen;
-lv_obj_t *dateView;
-lv_obj_t *timeView;
-lv_obj_t *hourL;
-lv_obj_t *hourR;
-lv_obj_t *minL;
-lv_obj_t *minR;
-lv_obj_t *sec;
-lv_obj_t *colon;
 
-void screenInit() {
+void Time::screenInit() {
     act_screen = lv_scr_act();
     static lv_style_t screenStyle;
     lv_style_init(&screenStyle);
@@ -38,7 +29,7 @@ void screenInit() {
     lv_obj_add_style(act_screen, &screenStyle, LV_STATE_DEFAULT);
 }
 
-void showDateView() {
+void Time::showDateView() {
     static lv_style_t dateStyle;
     lv_style_init(&dateStyle);
     lv_style_set_text_color(&dateStyle, lv_color_hex(0xf0faff));
@@ -52,7 +43,7 @@ void showDateView() {
     lv_obj_add_style(dateView, &dateStyle, LV_STATE_DEFAULT);
 }
 
-void showTimeView() {
+void Time::showTimeView() {
     timeView = lv_obj_create(act_screen);
     static lv_style_t boxStyle;
     lv_style_init(&boxStyle);
@@ -80,7 +71,7 @@ void animationShow(lv_obj_t *obj) {
     lv_anim_start(&a);
 }
 
-lv_obj_t *showTimeItem(const char *val) {
+lv_obj_t *Time::showTimeItem(const char *val) {
     static lv_style_t labelStyle;
     lv_style_init(&labelStyle);
     lv_style_set_text_font(&labelStyle, &timeFont);
@@ -141,19 +132,18 @@ void Time::ui() {
 }
 
 void Time::destroyUi() {
-    lv_obj_del(act_screen);
-    lv_obj_del(timeView);
-    lv_obj_del(hourL);
-    lv_obj_del(hourR);
-    lv_obj_del(minL);
-    lv_obj_del(minR);
-    lv_obj_del(sec);
-    lv_obj_del(colon);
+    lv_obj_clean(minL);
+    lv_obj_clean(minR);
+    lv_obj_clean(hourL);
+    lv_obj_clean(hourR);
+    lv_obj_clean(sec);
+    lv_obj_clean(colon);
+    lv_obj_clean(timeView);
+    lv_obj_clean(act_screen);
 }
 
-boolean calibration = true;
 
-void update() {
+void Time::update() {
 
     int secNum = localTime.getSecond();
     lv_label_set_text(sec, String(secNum).c_str());
@@ -199,55 +189,49 @@ void update() {
     }
 }
 
-void IRAM_ATTR onTimer() {
-    update();
-}
+//void IRAM_ATTR onTimer() {
+//    Time::update();
+//}
 
 
 void Time::setup() {
     localTime.setTime(1652112000);
     ui();
-    hw_timer_t *timer = timerBegin(0, 80, true);
-    timerAttachInterrupt(timer, &onTimer, true);
-    timerAlarmWrite(timer, 1000000, true);
-    timerAlarmEnable(timer);
+
+//    hw_timer_t *timer = timerBegin(0, 80, true);
+//    timerAttachInterrupt(timer, &onTimer, true);
+//    timerAlarmWrite(timer, 1000000, true);
+//    timerAlarmEnable(timer);
 }
 
-static int lastsec = millis();
-int updateIndex = 0;
 
 void Time::loop() {
 //    隔一段时间校准;
-    if (millis() - lastsec > 1000 * 2) {
-        if (updateIndex >= 1) {
-            calibration = false;
-        }
+    if (millis() - lastsec > 1000) {
         lastsec = millis();
         if (calibration) {
             unsigned long stamp = httpGetTime();
             if (stamp > 0) {
                 localTime.setTime(stamp);
-                updateIndex++;
+                update();
+                calibration = false;
             }
         }
-        if (updateIndex >= 1) {
-            updateIndex++;
-            if (updateIndex == 500) {
-                updateIndex = 1;
-                unsigned long stamp = httpGetTime();
-                if (stamp > 0) {
-                    localTime.setTime(stamp);
-                }
-            }
+        update();
+        updateIndex++;
+        if (updateIndex == 50) {
+            updateIndex = 0;
+            update();
         }
-
-        Serial.println(updateIndex);
+//        Serial.printf("upDateIndex;%d\n", updateIndex);
     }
 
 }
 
 void Time::exit() {
-
+    destroyUi();
+    calibration = true;
+    updateIndex = 0;
 }
 
 

@@ -8,12 +8,14 @@ HTTPClient http;
 
 unsigned long httpGetTime() {
     http.begin("http://vv.video.qq.com/checktime?otype=json");
+    unsigned long s = millis();
     int httpCode = http.GET(); // 发起GET请求
     if (httpCode > 0) // 如果状态码大于0说明请求过程无异常
     {
         String res = http.getString();
         int timeIndex = (res.indexOf("\"t\":"));
 //        Serial.printf("%s\n", res.substring(timeIndex+4,timeIndex+14).c_str());
+//        Serial.printf("offset:%d\n",millis() - s);
         return atol(res.substring(timeIndex + 4, timeIndex + 14).c_str());
     } else {
         Serial.printf("请求网络时间失败！\n");
@@ -34,8 +36,8 @@ boolean httpLogin() {
             String res = http.getString();
 
             int resCode = atol(res.substring(18, 19).c_str());
-            int retCode=atol(res.substring(41, 42).c_str());
-            if (resCode==0&&retCode==2){
+            int retCode = atol(res.substring(41, 42).c_str());
+            if (resCode == 0 && retCode == 2) {
                 isLogin = true;
             }
 //            Serial.println(res);

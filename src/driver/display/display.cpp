@@ -61,7 +61,7 @@ void Display::routine(void (*fun)()) {
 //    timerAlarmEnable(timer);
     long last_time = millis();
     fun();
-    delay(50);
+//    delay(50);
     lv_task_handler();
     lv_tick_inc(int(millis() - last_time));
 }

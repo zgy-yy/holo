@@ -3,6 +3,7 @@
 #include "app/time/time.h"
 #include "sys/webServer/webServer.h"
 #include "sys/http/http.h"
+#include "app/test/test.h"
 #include <Arduino.h>
 
 Display screen;
@@ -13,19 +14,30 @@ WebServer *webServer;
 void setup() {
     Serial.begin(115200);
     screen.init(4, 100);
-    appController = new AppController();
+
     webServer = new WebServer();
-    appController->run_app(new Time());
+    appController = new AppController();
+    appController->addApp(new Time("time","","",""));
+    appController->addApp(new Test("Test","","",""));
 }
 
 boolean isLogin = false;
-void processLoop() {
-    appController->mainProcess();
-    if(!isLogin){
+
+
+int ind = 0;
+void App_process() {
+    if (!appController->isSetup) {
+        appController->run_app(ind);
+    } else {
+        appController->mainProcess();
+    }
+
+//
+    if (!isLogin) {
         isLogin = httpLogin();
     }
 }
 
 void loop() {
-    screen.routine(processLoop);
+    screen.routine(App_process);
 }
