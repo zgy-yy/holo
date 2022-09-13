@@ -6,6 +6,7 @@
 #define M_HOLO_APP_CONTROLLER_H
 
 #include <Arduino.h>
+#include <lvgl.h>
 
 class App {
 private:
@@ -16,6 +17,7 @@ public:
     char *app_author;
     char *app_version;
     char *app_info;
+
     App() {}
 
     App(char *name, char *author, char *version, char *info) {
@@ -35,22 +37,33 @@ public:
 };
 
 class AppController {
-    int len = -1;
+    int selIndex = -1;
+    int len = 0;
     App *currentApp;
-public:
-    App *appList[10];
-    boolean isSetup = false;
 
-    AppController() {
-    }
-
-    void addApp(App *app);
-
-    void run_app(int);
+    void run_app();
 
     void mainProcess(int active);
 
     void exit_app();
+
+    App *appList[10];
+    boolean running = false;
+public:
+
+
+    AppController() {}
+
+    void addApp(App *app);
+
+    lv_obj_t *screen;
+    lv_obj_t *appName;
+
+    void Gui();
+   void destroyGui();
+    void controller(int active);
+
+
 };
 
 #endif //M_HOLO_APP_CONTROLLER_H

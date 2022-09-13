@@ -17,13 +17,14 @@ void IMU::adjust() {
     imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
     ad_ax = ax;
     ad_ay = ay;
-    Serial.printf("ax:%d,ay:%d", ax, ay);
+    Serial.printf("ax:%d,ay:%d\n", ax, ay);
 }
 
 
 void IMU::update(int interval, int *activeType) {
     if (millis() - last_update_time > interval) {
         imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+        Serial.printf("ax:%d,ay:%d\n", ax, ay);
         int actType = 4;//unknown
 
         if (ay - ad_ay > 3000) {

@@ -21,21 +21,18 @@ void setup() {
     appController = new AppController();
     appController->addApp(new Time("time", "", "", ""));
     appController->addApp(new Test("Test", "", "", ""));
+    appController->Gui();
 }
 
 boolean isLogin = false;
 
 
-int ind = 0;
-int active=4;
-void App_process() {
-    mpu.update(1000,&active);
+int active = 4;
 
-    if (!appController->isSetup) {
-        appController->run_app(ind);
-    } else {
-        appController->mainProcess(active);
-    }
+void App_process() {
+    mpu.update(1000, &active);
+
+    appController->controller(active);
 
 //
     if (!isLogin) {

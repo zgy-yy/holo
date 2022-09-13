@@ -197,7 +197,7 @@ void Time::update() {
 void Time::setup() {
     localTime.setTime(1652112000);
     ui();
-
+    lastsec = millis();
 //    hw_timer_t *timer = timerBegin(0, 80, true);
 //    timerAttachInterrupt(timer, &onTimer, true);
 //    timerAlarmWrite(timer, 1000000, true);
@@ -208,7 +208,7 @@ void Time::setup() {
 void Time::loop(int active) {
 //    隔一段时间校准;
     if (millis() - lastsec > 1000) {
-        Serial.printf("%d\n",active);
+        Serial.printf("%d\n", active);
 
         lastsec = millis();
         if (calibration) {
