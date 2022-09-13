@@ -205,9 +205,11 @@ void Time::setup() {
 }
 
 
-void Time::loop() {
+void Time::loop(int active) {
 //    隔一段时间校准;
     if (millis() - lastsec > 1000) {
+        Serial.printf("%d\n",active);
+
         lastsec = millis();
         if (calibration) {
             unsigned long stamp = httpGetTime();

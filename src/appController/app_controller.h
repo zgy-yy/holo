@@ -28,7 +28,7 @@ public:
     //子类必须实例化该函数，作为应用的入口,只执行一次，用于初始化
     virtual void setup() = 0;
 
-    virtual void loop() = 0;
+    virtual void loop(int active) = 0;
 
 //    程序退出，应打扫现场，防止内存泄露
     virtual void exit() = 0;
@@ -48,7 +48,7 @@ public:
 
     void run_app(int);
 
-    void mainProcess();
+    void mainProcess(int active);
 
     void exit_app();
 };

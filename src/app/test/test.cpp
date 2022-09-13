@@ -21,7 +21,7 @@ void Test::setup() {
     lv_obj_align(obj, LV_ALIGN_CENTER, 0, 0);
 }
 
-void Test::loop() {
+void Test::loop(int active) {
 
 }
 

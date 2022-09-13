@@ -14,20 +14,29 @@
 extern int32_t encoder_diff;
 extern lv_indev_state_t encoder_state;
 
+
+
+enum Action{
+    left=0,
+    right,
+    up,
+    down,
+    unknown
+};
+
 class IMU
 {
 private:
     MPU6050 imu;
-    int flag;
     int16_t ax, ay, az;
     int16_t gx, gy, gz;
-
+    int16_t ad_ax,ad_ay;
     long  last_update_time;
 
 public:
     void init();
-
-    void update(int interval);
+    void adjust();
+    void update(int interval,int *activeType);
 
     int16_t getAccelX();
     int16_t getAccelY();

@@ -3,6 +3,7 @@
 //
 
 #include "util.h"
+#include "driver/imu/imu.h"
 
 ESP32Time localTime(28800);
 

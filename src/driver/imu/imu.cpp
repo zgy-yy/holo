@@ -3,81 +3,73 @@
 //
 
 #include "imu.h"
-void IMU::init()
-{
+
+void IMU::init() {
     Wire.begin(IMU_I2C_SDA, IMU_I2C_SCL);
     Wire.setClock(400000);
     while (!imu.testConnection());
     imu.initialize();
 }
 
-void IMU::update(int interval)
-{
+char *active_type[] = {"left", "right", "up", "down", "unknown"};
+
+void IMU::adjust() {
     imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+    ad_ax = ax;
+    ad_ay = ay;
+    Serial.printf("ax:%d,ay:%d", ax, ay);
+}
 
-//    Serial.print(gx);
-//    Serial.print(" ");
-//    Serial.print(gy);
-//    Serial.print(" ");
-//    Serial.print(gz);
-//    Serial.println(" ");
 
-    if (millis() - last_update_time > interval)
-    {
-        if (ay > 3000 && flag)
-        {
+void IMU::update(int interval, int *activeType) {
+    if (millis() - last_update_time > interval) {
+        imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+        int actType = 4;//unknown
+
+        if (ay - ad_ay > 3000) {
             encoder_diff--;
-            flag = 0;
-        }
-        else if (ay < -3000 && flag)
-        {
+            actType = 0;
+        } else if (ay - ad_ay < -3000) {
             encoder_diff++;
-            flag = 0;
-        }
-        else
-        {
-            flag = 1;
+            actType = 1;
         }
 
-        if (ax > 10000)
-        {
+        if (ax - ad_ax > 3000) {
             encoder_state = LV_INDEV_STATE_PR;//按下
-        }
-        else
-        {
+            actType = 2;
+        } else if (ax - ad_ax < -3000) {
             encoder_state = LV_INDEV_STATE_REL;//松开
+            actType = 3;//down
         }
 
         last_update_time = millis();
+        *activeType = actType;
+        Serial.println(active_type[actType]);
     }
 }
 
-int16_t IMU::getAccelX()
-{
+int16_t IMU::getAccelX() {
     return ax;
 }
 
-int16_t IMU::getAccelY()
-{
+int16_t IMU::getAccelY() {
     return ay;
 }
 
-int16_t IMU::getAccelZ()
-{
+int16_t IMU::getAccelZ() {
     return az;
 }
 
-int16_t IMU::getGyroX()
-{
+int16_t IMU::getGyroX() {
     return gx;
 }
 
-int16_t IMU::getGyroY()
-{
+int16_t IMU::getGyroY() {
     return gy;
 }
 
-int16_t IMU::getGyroZ()
-{
+int16_t IMU::getGyroZ() {
     return gz;
 }
+
+

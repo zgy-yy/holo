@@ -11,8 +11,8 @@ void AppController::run_app(int index) {
     isSetup = true;
 }
 
-void AppController::mainProcess() {
-    this->currentApp->loop();
+void AppController::mainProcess(int active) {
+    this->currentApp->loop(active);
 }
 
 void AppController::addApp(App *app) {

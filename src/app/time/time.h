@@ -19,7 +19,7 @@ public:
 
     void setup() override;
 
-    void loop() override;
+    void loop(int ) override;
 
     void exit() override;
 
