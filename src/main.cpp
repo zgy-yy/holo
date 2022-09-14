@@ -27,13 +27,9 @@ void setup() {
 boolean isLogin = false;
 
 
-int active = 4;
-
 void App_process() {
-    mpu.update(1000, &active);
-
-    appController->controller(active);
-
+    mpu.update();
+    appController->controller(mpu.getAction());
 //
     if (!isLogin) {
         isLogin = httpLogin();

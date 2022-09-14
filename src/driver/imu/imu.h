@@ -16,7 +16,7 @@ extern lv_indev_state_t encoder_state;
 
 
 
-enum Action{
+enum ACTION_TYPE{
     left=0,
     right,
     up,
@@ -36,7 +36,8 @@ private:
 public:
     void init();
     void adjust();
-    void update(int interval,int *activeType);
+    void update();
+    int getAction();
 
     int16_t getAccelX();
     int16_t getAccelY();

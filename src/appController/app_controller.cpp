@@ -14,7 +14,9 @@ void AppController::Gui() {
 
     appName = lv_label_create(screen);
     if (len >= 0) {
-        currentApp = appList[0];
+        if(!currentApp){
+            currentApp = appList[selIndex];
+        }
 //    lv_obj_set_style_text_font(obj, LV_FONT_MONTSERRAT_28, LV_STATE_DEFAULT);
         lv_label_set_text(appName, this->currentApp->app_name);
         lv_obj_set_style_text_color(appName, lv_color_white(), LV_STATE_DEFAULT);
@@ -36,35 +38,35 @@ void AppController::controller(int active) {
         mainProcess(active);
     }
 
-    if (millis() - lastMill > 800) {
-        switch (active) {
-            case 0: {
-                selIndex = (selIndex + 1) % len;
-                currentApp = appList[selIndex];
-                lv_label_set_text(appName, currentApp->app_name);
-                break;
-            }
-            case 1: {
-                selIndex = (selIndex - 1) % len;
-                currentApp = appList[selIndex];
-                lv_label_set_text(appName, currentApp->app_name);
-                break;
-            }
-            case 2: {
-                if (running) {
-                    exit_app();
-                    Gui();
+    if (millis() - lastMill > 300) {
+        if(!running){
+            switch (active) {
+                case 0: {
+                    selIndex = (selIndex + 1) % len;
+                    currentApp = appList[selIndex];
+                    lv_label_set_text(appName, currentApp->app_name);
+                    break;
                 }
-                break;
-            }
-            case 3:
-                if (!running) {
-                    destroyGui();
-                    run_app();
+                case 1: {
+                    selIndex = (selIndex - 1+len) % len;
+                    currentApp = appList[selIndex];
+                    lv_label_set_text(appName, currentApp->app_name);
+                    break;
                 }
-                break;
-
+                case 3:
+                    if (!running) {
+                        destroyGui();
+                        run_app();
+                    }
+                    break;
+            }
+        } else{
+            if(active==2){
+                exit_app();
+                Gui();
+            }
         }
+
         lastMill = millis();
     }
 

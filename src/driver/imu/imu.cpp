@@ -11,43 +11,69 @@ void IMU::init() {
     imu.initialize();
 }
 
-char *active_type[] = {"left", "right", "up", "down", "unknown"};
 
 void IMU::adjust() {
+    imu.CalibrateAccel(7);
+    imu.CalibrateGyro(7);
+    imu.PrintActiveOffsets();
     imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
     ad_ax = ax;
     ad_ay = ay;
     Serial.printf("ax:%d,ay:%d\n", ax, ay);
 }
 
+int active_type[3] = {ACTION_TYPE::unknown};
 
-void IMU::update(int interval, int *activeType) {
+void pushAction(int type) {
+    for (int i = 0; i < 3; i++) {
+        active_type[i] = active_type[i + 1];
+        if (i == 2) {
+            active_type[i] = type;
+        }
+    }
+}
+
+void IMU::update() {
+    static int interval = 300;
     if (millis() - last_update_time > interval) {
         imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
         Serial.printf("ax:%d,ay:%d\n", ax, ay);
-        int actType = 4;//unknown
-
-        if (ay - ad_ay > 3000) {
+        if (ay - ad_ay > 4000) {
             encoder_diff--;
-            actType = 0;
-        } else if (ay - ad_ay < -3000) {
+            pushAction(ACTION_TYPE::left);
+        } else if (ay - ad_ay < -4000) {
             encoder_diff++;
-            actType = 1;
+            pushAction(ACTION_TYPE::right);
         }
 
-        if (ax - ad_ax > 3000) {
+        if (ax - ad_ax > 5000) {
             encoder_state = LV_INDEV_STATE_PR;//按下
-            actType = 2;
-        } else if (ax - ad_ax < -3000) {
+            pushAction(ACTION_TYPE::up);
+        } else if (ax - ad_ax < -5000) {
             encoder_state = LV_INDEV_STATE_REL;//松开
-            actType = 3;//down
+            pushAction(ACTION_TYPE::down);
+        }
+
+        if (ay - ad_ay < 4000 && ay - ad_ay > -4000 && ax - ad_ax < 5000 && ax - ad_ax > -5000) {
+            pushAction(ACTION_TYPE::unknown);
+
         }
 
         last_update_time = millis();
-        *activeType = actType;
-        Serial.println(active_type[actType]);
     }
 }
+
+int IMU::getAction() {
+    if (active_type[0] == active_type[1] == active_type[1]) {
+        active_type[2] = 4;
+    }
+    if (active_type[0] == active_type[1]) {
+        active_type[1] = 4;
+    }
+    return active_type[0];
+}
+
 
 int16_t IMU::getAccelX() {
     return ax;
@@ -72,5 +98,6 @@ int16_t IMU::getGyroY() {
 int16_t IMU::getGyroZ() {
     return gz;
 }
+
 
 
