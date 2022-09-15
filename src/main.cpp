@@ -6,6 +6,7 @@
 #include "app/test/test.h"
 #include "driver/imu/imu.h"
 #include "sys/mqtt/mqttClient.h"
+#include "app/computerWatcher/watcher.h"
 #include <Arduino.h>
 
 Display screen;
@@ -21,6 +22,7 @@ void setup() {
     webServer = new WebServer();
     appController = new AppController();
     appController->addApp(new Time());
+    appController->addApp(new Watcher());
     appController->addApp(new Test());
     appController->Gui();
     mqttClient.init();

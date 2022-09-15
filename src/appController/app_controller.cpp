@@ -22,6 +22,7 @@ void AppController::Gui() {
         lv_label_set_text(appName, this->currentApp->app_name);
         lv_obj_set_style_pad_all(appName, 1, LV_STATE_DEFAULT);
         lv_obj_set_style_border_width(appName, 1, LV_STATE_DEFAULT);
+        lv_obj_set_style_border_color(appName, lv_color_white(), LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(appName, lv_color_white(), LV_STATE_DEFAULT);
         lv_obj_align(appName, LV_ALIGN_CENTER, 0, 0);
     }
@@ -35,6 +36,7 @@ void AppController::destroyGui() {
 //char *active_type[] = {"left", "right", "up", "down", "unknown"};
 long lastMill = millis();
 
+//
 char *show_appName = "";
 
 //app 主动通知 运行此app
