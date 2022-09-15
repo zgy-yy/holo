@@ -60,10 +60,11 @@ public:
     lv_obj_t *appName;
 
     void Gui();
-   void destroyGui();
+
+    void destroyGui();
+
     void controller(int active);
 
-
 };
-
+void showMe(char *app_name);
 #endif //M_HOLO_APP_CONTROLLER_H

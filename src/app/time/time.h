@@ -15,8 +15,6 @@ class Time : public App {
 public:
     Time();
 
-    Time(char *name, char *author, char *version, char *info);
-
     void setup() override;
 
     void loop(int ) override;

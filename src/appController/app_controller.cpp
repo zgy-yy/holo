@@ -3,6 +3,7 @@
 //
 
 #include "app_controller.h"
+#include "sys/mqtt/mqttClient.h"
 
 
 void AppController::Gui() {
@@ -14,11 +15,13 @@ void AppController::Gui() {
 
     appName = lv_label_create(screen);
     if (len >= 0) {
-        if(!currentApp){
+        if (!currentApp) {
             currentApp = appList[selIndex];
         }
 //    lv_obj_set_style_text_font(obj, LV_FONT_MONTSERRAT_28, LV_STATE_DEFAULT);
         lv_label_set_text(appName, this->currentApp->app_name);
+        lv_obj_set_style_pad_all(appName, 1, LV_STATE_DEFAULT);
+        lv_obj_set_style_border_width(appName, 1, LV_STATE_DEFAULT);
         lv_obj_set_style_text_color(appName, lv_color_white(), LV_STATE_DEFAULT);
         lv_obj_align(appName, LV_ALIGN_CENTER, 0, 0);
     }
@@ -26,20 +29,42 @@ void AppController::Gui() {
 
 void AppController::destroyGui() {
     lv_obj_clean(screen);
-    lv_obj_clean(appName);
 }
 
 
 //char *active_type[] = {"left", "right", "up", "down", "unknown"};
 long lastMill = millis();
 
+char *show_appName = "";
+
+//app 主动通知 运行此app
+void showMe(char *app_name) {
+    show_appName = app_name;
+}
+
 void AppController::controller(int active) {
+
+
+    for (int i = 0; i < len; i++) {
+        if (appList[i]->app_name == show_appName) {
+            if (currentApp == appList[i]) {
+                break;
+            }
+//            Serial.println("show");
+            //退出当前app
+            exit_app();
+            currentApp = appList[i];
+            run_app();
+            show_appName = "";
+        }
+    }
+
     if (running) {
         mainProcess(active);
     }
 
     if (millis() - lastMill > 300) {
-        if(!running){
+        if (!running) {
             switch (active) {
                 case 0: {
                     selIndex = (selIndex + 1) % len;
@@ -48,7 +73,7 @@ void AppController::controller(int active) {
                     break;
                 }
                 case 1: {
-                    selIndex = (selIndex - 1+len) % len;
+                    selIndex = (selIndex - 1 + len) % len;
                     currentApp = appList[selIndex];
                     lv_label_set_text(appName, currentApp->app_name);
                     break;
@@ -60,8 +85,8 @@ void AppController::controller(int active) {
                     }
                     break;
             }
-        } else{
-            if(active==2){
+        } else {
+            if (active == 2) {
                 exit_app();
                 Gui();
             }
@@ -74,9 +99,13 @@ void AppController::controller(int active) {
 
 
 void AppController::run_app() {
-    this->currentApp->setup();
-    Serial.printf("启动APP->%s\n", currentApp->app_name);
-    running = true;
+    if (this->currentApp && !running) {
+        destroyGui();
+        this->currentApp->setup();
+        Serial.printf("启动APP->%s\n", currentApp->app_name);
+        running = true;
+    }
+
 }
 
 void AppController::mainProcess(int active) {
@@ -89,12 +118,15 @@ void AppController::addApp(App *app) {
 }
 
 void AppController::exit_app() {
-    Serial.printf("退出APP->%s\n", currentApp->app_name);
-    if (this->currentApp) {
+    if (this->currentApp && running) {
         this->currentApp->exit();
+        Serial.printf("退出APP->%s\n", currentApp->app_name);
         this->running = false;
     }
 }
+
+
+
 
 
 

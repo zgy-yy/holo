@@ -7,22 +7,19 @@
 
 #include "appController/app_controller.h"
 #include <lvgl.h>
-class Test : public App {
-public:
-    Test() {
-    }
+#include "PubSubClient.h"
 
-    Test(char *name, char *author, char *version, char *info) : App(name, author, version, info) {
-    }
+class Test : public App {
+
+public:
+    Test();
 
     void setup() override;
 
     void loop(int) override;
 
     void exit() override;
-private:
-    lv_obj_t *screen;
-    lv_obj_t *obj;
+
 };
 
 #endif //M_HOLO_TEST_H

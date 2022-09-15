@@ -10,11 +10,7 @@
 //int offset=28800;
 
 Time::Time() {
-
-}
-
-Time::Time(char *name, char *author, char *version, char *info) : App(name, author, version, info) {
-
+    this->app_name ="TIME";
 }
 
 LV_FONT_DECLARE(mFont);
@@ -132,13 +128,6 @@ void Time::ui() {
 }
 
 void Time::destroyUi() {
-    lv_obj_clean(minL);
-    lv_obj_clean(minR);
-    lv_obj_clean(hourL);
-    lv_obj_clean(hourR);
-    lv_obj_clean(sec);
-    lv_obj_clean(colon);
-    lv_obj_clean(timeView);
     lv_obj_clean(act_screen);
 }
 
@@ -233,6 +222,8 @@ void Time::exit() {
     calibration = true;
     updateIndex = 0;
 }
+
+
 
 
 //extern lv_font_t mFont;

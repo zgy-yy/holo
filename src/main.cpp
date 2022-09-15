@@ -5,6 +5,7 @@
 #include "sys/http/http.h"
 #include "app/test/test.h"
 #include "driver/imu/imu.h"
+#include "sys/mqtt/mqttClient.h"
 #include <Arduino.h>
 
 Display screen;
@@ -16,12 +17,14 @@ void setup() {
     Serial.begin(115200);
     screen.init(4, 100);
     mpu.init();
-    mpu.adjust();
+//    mpu.adjust();
     webServer = new WebServer();
     appController = new AppController();
-    appController->addApp(new Time("time", "", "", ""));
-    appController->addApp(new Test("Test", "", "", ""));
+    appController->addApp(new Time());
+    appController->addApp(new Test());
     appController->Gui();
+    mqttClient.init();
+
 }
 
 boolean isLogin = false;
@@ -34,6 +37,7 @@ void App_process() {
     if (!isLogin) {
         isLogin = httpLogin();
     }
+    mqttClient.loop();
 }
 
 void loop() {

@@ -38,7 +38,7 @@ void IMU::update() {
     static int interval = 300;
     if (millis() - last_update_time > interval) {
         imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-        Serial.printf("ax:%d,ay:%d\n", ax, ay);
+//        Serial.printf("ax:%d,ay:%d\n", ax, ay);
         if (ay - ad_ay > 4000) {
             encoder_diff--;
             pushAction(ACTION_TYPE::left);
