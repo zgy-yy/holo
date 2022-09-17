@@ -14,11 +14,12 @@ void AppController::Gui() {
     lv_style_set_bg_color(&screenStyle, lv_color_black());
     lv_obj_add_style(screen, &screenStyle, LV_STATE_DEFAULT);
 
-    appName = lv_label_create(screen);
-    if (len >= 0) {
+    if (len > 0) {
+        appName = lv_label_create(screen);
         if (!currentApp) {
             currentApp = appList[selIndex];
         }
+        Serial.println(currentApp->app_name);
 //    lv_obj_set_style_text_font(obj, LV_FONT_MONTSERRAT_28, LV_STATE_DEFAULT);
         lv_label_set_text(appName, this->currentApp->app_name);
         lv_obj_set_style_pad_all(appName, 1, LV_STATE_DEFAULT);

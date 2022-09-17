@@ -19,7 +19,6 @@ ImuAction *action;
 void setup() {
     Serial.begin(115200);
     screen.init(4, 0);
-    mpu.init(0);
     webServer = new WebServer();
     appController = new AppController();
     appController->addApp(new Watcher());
@@ -28,6 +27,7 @@ void setup() {
     appController->addApp(new Time());
     appController->Gui();
     mqttClient.init();
+    mpu.init(0);
     screen.setBackLight(100);
 }
 
