@@ -34,4 +34,4 @@ include_directories(./src)
 
 add_executable(Z_DUMMY_TARGET ${SRC_LIST} src/driver/rgb/rgb_led.cpp src/driver/rgb/rgb_led.h src/driver/display/display.cpp src/driver/display/display.h
         src/driver/imu/imu.cpp src/driver/imu/imu.h src/driver/display/lv_port_indev.cpp src/driver/display/lv_port_indev.h src/sys/webServer/webServer.cpp
-        src/sys/webServer/webServer.h src/utils/util.cpp src/utils/util.h src/app/time/mFont.cpp src/app/time/mFont.cpp src/sys/http/http.cpp src/sys/http/http.h src/sys/mqtt/mqttClient.cpp src/sys/mqtt/mqttClient.h src/app/computerWatcher/watcher.cpp src/app/computerWatcher/watcher.h)
+        src/sys/webServer/webServer.h src/utils/util.cpp src/utils/util.h src/app/time/mFont.cpp src/app/time/mFont.cpp src/sys/http/http.cpp src/sys/http/http.h src/sys/mqtt/mqttClient.cpp src/sys/mqtt/mqttClient.h src/app/computerWatcher/watcher.cpp src/app/computerWatcher/watcher.h src/app/heart/heart.cpp src/app/heart/heart.h)

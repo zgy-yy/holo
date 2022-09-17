@@ -12,45 +12,48 @@ lv_obj_t *value_cpu;
 lv_obj_t *value_mem;
 lv_obj_t *bar_cpu;
 lv_obj_t *bar_mem;
+lv_obj_t *watcher_screen;
 
 Watcher::Watcher() {
     this->app_name = "WATCHER";
 
     mqttClient.addReceiveCallback("/cpInfo", [](byte *payload, unsigned int length) {
         payload[length] = '\0';
-        String res((char *) payload);
-        float cpu = atof(res.substring(0, 4).c_str());
-        float useMem = atof(res.substring(6, 10).c_str());
-        float totalMem = atof(res.substring(12, 16).c_str());
+        if (watcher_screen) {
+            String res((char *) payload);
+            float cpu = atof(res.substring(0, res.indexOf(',')).c_str());
+            String remain = res.substring(res.indexOf(',') + 1, length);
+//        Serial.println(remain);
+            float useMem = atof(remain.substring(0, remain.indexOf(',')).c_str());
 
-        if (value_cpu) {
-            lv_label_set_text(value_cpu, (res.substring(0, 4)+"%").c_str());
+            remain = remain.substring(remain.indexOf(',') + 1, remain.length());
+//        Serial.println(remain);
+            float totalMem = atof(remain.substring(0, remain.length()).c_str());
+
+            lv_label_set_text(value_cpu, (res.substring(0, 4) + "%").c_str());
             lv_bar_set_value(bar_cpu, cpu, LV_ANIM_ON);
-        }
-        if (value_cpu) {
-            lv_label_set_text(value_mem, (String(useMem / totalMem*100)+"%").c_str());
-            lv_bar_set_value(bar_mem, useMem / totalMem*100, LV_ANIM_ON);
-        }
-        Serial.printf("%f,%f,%f\n", cpu, totalMem, useMem);
-
+            lv_label_set_text(value_mem, (String((useMem / totalMem) * 100) + "%").c_str());
+            lv_bar_set_value(bar_mem, (useMem / totalMem) * 100, LV_ANIM_ON);
+//            Serial.printf("%f,%f,%f\n", cpu, useMem, totalMem);
 //
-        Serial.printf("%s\n", payload);
+//            Serial.printf("%s,%s,%s\n", payload);
+        }
+
     });
 }
 
-lv_obj_t *watcher_screen;
 
 void app_gui() {
     watcher_screen = lv_scr_act();
 
-    lv_obj_set_style_bg_color(watcher_screen,lv_color_black(),LV_PART_MAIN);
+    lv_obj_set_style_bg_color(watcher_screen, lv_color_black(), LV_PART_MAIN);
 
     static lv_style_t boxStyle;
     lv_style_init(&boxStyle);
-    lv_style_set_bg_color(&boxStyle,lv_color_black());
+    lv_style_set_bg_color(&boxStyle, lv_color_black());
     lv_style_set_pad_all(&boxStyle, 0);
     lv_style_set_border_width(&boxStyle, 0);
-    lv_style_set_text_color(&boxStyle,lv_color_white());
+    lv_style_set_text_color(&boxStyle, lv_color_white());
 
     lv_obj_t *cpubox = lv_obj_create(watcher_screen);
     lv_obj_add_style(cpubox, &boxStyle, LV_PART_MAIN);
@@ -60,8 +63,8 @@ void app_gui() {
     static lv_style_t style_indic;
     lv_style_init(&style_indic);
     lv_style_set_bg_opa(&style_indic, LV_OPA_COVER);
-    lv_style_set_bg_color(&style_indic, lv_palette_main(LV_PALETTE_RED));
-    lv_style_set_bg_grad_color(&style_indic, lv_palette_main(LV_PALETTE_BLUE));
+    lv_style_set_bg_color(&style_indic, lv_palette_main(LV_PALETTE_YELLOW));
+    lv_style_set_bg_grad_color(&style_indic, lv_palette_main(LV_PALETTE_GREEN));
     lv_style_set_bg_grad_dir(&style_indic, LV_GRAD_DIR_VER);
 
 //    static lv_style_t textStyle;
@@ -132,4 +135,5 @@ void Watcher::loop(int active) {
 
 void Watcher::exit() {
     lv_obj_clean(watcher_screen);
+    watcher_screen = NULL;
 }

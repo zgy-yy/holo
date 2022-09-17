@@ -11,13 +11,13 @@ lv_obj_t *obj;
 
 Test::Test() {
 
-    this->app_name="TEST";
+    this->app_name="TEXT";
 
     appscreen = NULL;
     obj = NULL;
     mqttClient.addReceiveCallback("/yy", [](byte *payload, unsigned int length) {
         payload[length] = '\0';
-        showMe("TEST");
+        showMe("TEXT");
 //        if (obj) {
 //            lv_label_set_text(obj, (char *) payload);
 //        }
@@ -35,7 +35,7 @@ void Test::setup() {
 
     obj = lv_label_create(appscreen);
 //    lv_obj_set_style_text_font(obj, LV_FONT_MONTSERRAT_28, LV_STATE_DEFAULT);
-    lv_label_set_text(obj, "Hello ");
+    lv_label_set_text(obj, "Hello");
     lv_obj_set_style_text_color(obj, lv_color_white(), LV_STATE_DEFAULT);
     lv_obj_align(obj, LV_ALIGN_CENTER, 0, 0);
 }

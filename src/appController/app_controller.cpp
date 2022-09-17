@@ -4,6 +4,7 @@
 
 #include "app_controller.h"
 #include "sys/mqtt/mqttClient.h"
+#include "driver/imu/imu.h"
 
 
 void AppController::Gui() {
@@ -44,8 +45,8 @@ void showMe(char *app_name) {
     show_appName = app_name;
 }
 
-void AppController::controller(int active) {
 
+void AppController::controller(ImuAction *action) {
 
     for (int i = 0; i < len; i++) {
         if (appList[i]->app_name == show_appName) {
@@ -60,27 +61,29 @@ void AppController::controller(int active) {
             show_appName = "";
         }
     }
-
     if (running) {
-        mainProcess(active);
+        mainProcess(action->active);
     }
-
     if (millis() - lastMill > 300) {
+        if (action->active != 7) {
+            Serial.println(active_type_info[action->active]);
+        }
+
         if (!running) {
-            switch (active) {
-                case 0: {
+            switch (action->active) {
+                case 0: { //turn right
                     selIndex = (selIndex + 1) % len;
                     currentApp = appList[selIndex];
                     lv_label_set_text(appName, currentApp->app_name);
                     break;
                 }
-                case 1: {
+                case 2: { //left
                     selIndex = (selIndex - 1 + len) % len;
                     currentApp = appList[selIndex];
                     lv_label_set_text(appName, currentApp->app_name);
                     break;
                 }
-                case 3:
+                case 5:
                     if (!running) {
                         destroyGui();
                         run_app();
@@ -88,15 +91,15 @@ void AppController::controller(int active) {
                     break;
             }
         } else {
-            if (active == 2) {
+            if (action->active == 1) {
                 exit_app();
                 Gui();
             }
         }
-
         lastMill = millis();
     }
-
+    action->active = ACTIVE_TYPE::UNKNOWN;
+    action->isValid = 0;
 }
 
 

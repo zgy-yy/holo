@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 #include <lvgl.h>
+#include "driver/imu/imu.h"
 
 class App {
 private:
@@ -63,8 +64,10 @@ public:
 
     void destroyGui();
 
-    void controller(int active);
+    void controller(ImuAction *active);
 
 };
+
 void showMe(char *app_name);
+
 #endif //M_HOLO_APP_CONTROLLER_H
